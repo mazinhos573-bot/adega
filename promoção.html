@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adega EVO - Promoções</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .promo-card {
+            border: 3px solid #ffc107;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-wine-glass-alt"></i> Adega EVO</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="produtos.html">Produtos</a>
+                <a class="nav-link" href="cadastro.html">Cadastrar</a>
+                <a class="nav-link active" href="promoção.html">Promoções</a>
+                <a class="nav-link text-danger" href="login.html">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Promoções Ativas</h2>
+        <div class="row" id="promoContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+        
+        function renderPromocoes() {
+            const container = document.getElementById('promoContainer');
+            container.innerHTML = '';
+            
+            // Simulando algumas promoções
+            const promos = produtos.slice(0, 3).map(p => ({
+                ...p,
+                desconto: Math.floor(Math.random() * 30) + 15,
+                precoPromo: (p.preco * 0.8).toFixed(2)
+            }));
+            
+            promos.forEach(promo => {
+                const card = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card promo-card bg-secondary text-light">
+                            <img src="${promo.imagem}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <span class="badge bg-danger fs-6 mb-2">-${promo.desconto}% OFF</span>
+                                <h5>${promo.nome}</h5>
+                                <p>
+                                    <del class="text-muted">R$ ${promo.preco}</del><br>
+                                    <strong class="fs-3 text-warning">R$ ${promo.precoPromo}</strong>
+                                </p>
+                                <small class="text-danger">Válido até ${promo.vencimento}</small>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-warning w-100">Adicionar à Promoção</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+        
+        renderPromocoes();
+    </script>
+</body>
+</html>
