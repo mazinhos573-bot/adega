@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adega EVO - Cadastro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-wine-glass-alt"></i> Adega EVO</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="produtos.html">Produtos</a>
+                <a class="nav-link active" href="cadastro.html">Cadastrar</a>
+                <a class="nav-link" href="promoção.html">Promoções</a>
+                <a class="nav-link text-danger" href="index.html">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-soft">
+                    <div class="card-header">
+                        <h4><i class="fas fa-plus"></i> Cadastrar Novo Produto</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="cadastroForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Nome do Produto</label>
+                                    <input type="text" class="form-control" id="nome" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Preço (R$)</label>
+                                    <input type="number" step="0.01" class="form-control" id="preco" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Imagem do Produto</label>
+                                <input type="file" class="form-control" id="imagem" accept="image/*" required>
+                                <small class="text-muted">Selecione a imagem do computador (JPG, PNG, etc)</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Código de Barras</label>
+                                <input type="text" class="form-control" id="codigoBarras" placeholder="0000000000000" required>
+                                <small class="text-muted">Use o leitor de código de barras para preencher automaticamente ou digite o código manualmente.</small>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Data de Vencimento</label>
+                                    <input type="date" class="form-control" id="vencimento" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Quantidade Inicial</label>
+                                    <input type="number" class="form-control" id="quantidade" value="1" required>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-accent btn-lg w-100">Cadastrar Produto</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('cadastroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const imageInput = document.getElementById('imagem');
+            const file = imageInput.files[0];
+
+            if (!file) {
+                alert('Selecione uma imagem.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+                
+                const novoProduto = {
+                    id: Date.now(),
+                    nome: document.getElementById('nome').value,
+                    preco: parseFloat(document.getElementById('preco').value),
+                    imagem: event.target.result, // base64
+                    codigoBarras: document.getElementById('codigoBarras').value.trim(),
+                    vencimento: document.getElementById('vencimento').value,
+                    quantidade: parseInt(document.getElementById('quantidade').value)
+                };
+                
+                produtos.push(novoProduto);
+                localStorage.setItem('produtos', JSON.stringify(produtos));
+                
+                alert('Produto cadastrado com sucesso!');
+                document.getElementById('cadastroForm').reset();
+                
+                // Redireciona para produtos
+                setTimeout(() => window.location.href = 'produtos.html', 800);
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adega EVO - Promoções</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .promo-card { border: 3px solid rgba(255,193,7,0.18); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-wine-glass-alt"></i> Adega EVO</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="produtos.html">Produtos</a>
+                <a class="nav-link" href="cadastro.html">Cadastrar</a>
+                <a class="nav-link active" href="promoção.html">Promoções</a>
+                <a class="nav-link text-danger" href="index.html">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Promoções Ativas</h2>
+
+        <div class="card card-soft mb-4">
+            <div class="card-body">
+                <div class="row gy-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label">Selecione os produtos</label>
+                        <p class="small text-muted mb-0">Clique nos cards abaixo para marcar os itens que devem receber promoção.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Desconto (%)</label>
+                        <input type="number" id="promoDesconto" class="form-control" min="1" max="90" value="20">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-accent w-100" onclick="aplicarPromocao()">Aplicar promoção</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="selectionContainer"></div>
+
+        <h3 class="mt-4">Promoções Ativas</h3>
+        <div class="row" id="promoContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+        let selectedProdutos = [];
+        let promocoes = JSON.parse(localStorage.getItem('promocoes')) || [];
+
+        function salvarPromocoes() {
+            localStorage.setItem('promocoes', JSON.stringify(promocoes));
+        }
+
+        function toggleSelecao(id) {
+            const index = selectedProdutos.indexOf(id);
+            if (index >= 0) {
+                selectedProdutos.splice(index, 1);
+            } else {
+                selectedProdutos.push(id);
+            }
+            renderSelecaoProdutos();
+        }
+
+        function renderSelecaoProdutos() {
+            const container = document.getElementById('selectionContainer');
+            container.innerHTML = '';
+
+            if (produtos.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-warning">Nenhum produto disponível. Cadastre produtos primeiro.</div></div>';
+                return;
+            }
+
+            produtos.forEach(prod => {
+                const selecionado = selectedProdutos.includes(prod.id);
+                const cardClass = selecionado ? 'border border-warning shadow-sm' : '';
+                container.innerHTML += `
+                    <div class="col-md-4 mb-4">
+                        <div class="card promo-card card-soft h-100 ${cardClass}" onclick="toggleSelecao(${prod.id})" style="cursor: pointer;">
+                            <img src="${prod.imagem}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5>${prod.nome}</h5>
+                                <p class="mb-1"><strong>Preço:</strong> R$ ${prod.preco.toFixed(2)}</p>
+                                <p class="mb-1"><strong>Vencimento:</strong> ${prod.vencimento}</p>
+                                <p class="mb-0 small text-muted">Clique para ${selecionado ? 'remover da seleção' : 'selecionar para promoção'}.</p>
+                            </div>
+                            ${selecionado ? '<div class="card-footer bg-warning text-dark"><strong>Selecionado</strong></div>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function aplicarPromocao() {
+            if (selectedProdutos.length === 0) {
+                alert('Selecione pelo menos um produto para aplicar a promoção.');
+                return;
+            }
+
+            const desconto = parseFloat(document.getElementById('promoDesconto').value);
+            if (!desconto || desconto <= 0 || desconto >= 100) {
+                alert('Informe um valor de desconto válido entre 1 e 90%.');
+                return;
+            }
+
+            const novosPromos = produtos.filter(p => selectedProdutos.includes(p.id)).map(prod => ({
+                ...prod,
+                desconto,
+                precoPromo: (prod.preco * (1 - desconto / 100)).toFixed(2)
+            }));
+
+            promocoes = promocoes.filter(p => !selectedProdutos.includes(p.id)).concat(novosPromos);
+            salvarPromocoes();
+            selectedProdutos = [];
+            renderSelecaoProdutos();
+            renderPromocoes();
+            alert('Promoção aplicada aos produtos selecionados.');
+        }
+
+        function renderPromocoes() {
+            const container = document.getElementById('promoContainer');
+            container.innerHTML = '';
+
+            if (promocoes.length === 0) {
+                container.innerHTML = '<div class="col-12"><div class="alert alert-info">Nenhuma promoção definida ainda. Selecione produtos acima e aplique um desconto.</div></div>';
+                return;
+            }
+
+            promocoes.forEach(promo => {
+                container.innerHTML += `
+                    <div class="col-md-4 mb-4">
+                        <div class="card promo-card card-soft h-100">
+                            <img src="${promo.imagem}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <span class="badge bg-danger fs-6 mb-2">-${promo.desconto}% OFF</span>
+                                <h5>${promo.nome}</h5>
+                                <p>
+                                    <del class="text-muted">R$ ${promo.preco.toFixed(2)}</del><br>
+                                    <strong class="fs-3 text-accent">R$ ${promo.precoPromo}</strong>
+                                </p>
+                                <small class="text-muted">Válido até ${promo.vencimento}</small>
+                                <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="removerPromocao(${promo.id})">Remover Promoção</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function removerPromocao(id) {
+            if (confirm('Deseja remover esta promoção?')) {
+                promocoes = promocoes.filter(p => p.id !== id);
+                salvarPromocoes();
+                renderPromocoes();
+                alert('Promoção removida com sucesso!');
+            }
+        }
+
+        renderSelecaoProdutos();
+        renderPromocoes();
+    </script>
+</body>
+</html>

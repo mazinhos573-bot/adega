@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adega EVO - Produtos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-wine-glass-alt"></i> Adega EVO</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="produtos.html">Produtos</a>
+                <a class="nav-link" href="cadastro.html">Cadastrar</a>
+                <a class="nav-link" href="promoção.html">Promoções</a>
+                <a class="nav-link text-danger" href="index.html">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Estoque de Produtos</h2>
+
+        <div class="card card-soft mb-4">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Escaneie ou digite o código de barras</label>
+                        <input type="text" id="barcodeInput" class="form-control search-input" placeholder="Código de barras" autocomplete="off">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Pesquisar produtos</label>
+                        <input type="text" id="searchInput" class="form-control search-input" placeholder="Nome ou código" autocomplete="off">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-accent w-100" onclick="biparProduto()">Bipar / Adicionar</button>
+                    </div>
+                        <div class="col-md-2 mb-3">
+                            <button class="btn btn-outline-secondary w-100" onclick="limparCarrinho()">Limpar nota</button>
+                        </div>
+                </div>
+                <p class="small text-muted">Os produtos selecionados são contabilizados como uma nota de supermercado: itens, quantidade, subtotal e total.</p>
+            </div>
+        </div>
+
+        <div class="row">
+                <div class="col-lg-8">
+                <div class="row" id="produtosContainer"></div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Promoção em Destaque</h5>
+                    </div>
+                    <div class="card-body" id="promoRotativaContainer" style="min-height: 200px;"></div>
+                </div>
+
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Nota de Supermercado</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-end">Qnt</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carrinhoBody"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" class="text-end"><strong>Total</strong></td>
+                                        <td class="text-end"><strong id="totalNota">R$ 0,00</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="gap: 10px; display: flex; flex-direction: column;">
+                        <button class="btn btn-accent w-100" onclick="finalizarCompra()"><i class="fas fa-check-circle"></i> Finalizar Compra</button>
+                        <button class="btn btn-outline-danger w-100" onclick="cancelarCompra()"><i class="fas fa-times-circle"></i> Cancelar Compra</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="bd.js"></script>
+</body>
+</html>
